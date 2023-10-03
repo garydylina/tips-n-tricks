@@ -1,0 +1,42 @@
+#!/bin/bash
+# Written by Gary Dylina
+display='text'
+port='443'
+if [[ -z $1 ]]; then
+   echo "hostname required"
+   exit
+else
+   host=$1
+fi
+#
+if [[ -n $2 ]]; then
+  display=$2
+fi
+if [[ ${display} == "help" ]]; then
+    echo "text (default) - print the certificate in text form"
+    echo "serial         - print serial number value"
+    echo "subject_hash   - print subject hash value"
+    echo "subject_hash_old   - print old-style (MD5) subject hash value"
+    echo "issuer_hash    - print issuer hash value"
+    echo "issuer_hash_old    - print old-style (MD5) issuer hash value"
+    echo "subject        - print subject DN"
+    echo "issuer         - print issuer DN"
+    echo "email          - print email address(es)"
+    echo "purpose        - print out certificate purposes"
+    echo "modulus        - print the RSA key modulus"
+    echo "fingerprint    - print the certificate fingerprint"
+    echo "ocspid         - print OCSP hash values for the subject name and public key"
+    echo "ocsp_uri       - print OCSP Responder URL(s)"
+    echo "text           - print the certificate in text form"
+    echo "C              - print out C code forms"
+fi
+#
+if [[ -n $3 ]]; then
+  if [[ $3 =~ '^[0-9]+$' ]]; then
+    port=$3
+  else
+    echo "port number must be numeric: $3"
+    exit
+  fi
+fi
+openssl s_client -servername $host -connect $host:$port -showcerts 2> /dev/null < /dev/null | openssl x509 -noout -$display 2>/dev/null
